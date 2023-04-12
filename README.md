@@ -1,10 +1,9 @@
 # QR-Code-Generator-html
-## <img width="346" alt="Untitled 3" src="https://user-images.githubusercontent.com/119916323/231365441-91e0e45f-ab9b-4693-acae-7bab2d324353.png">
 ### Very Simple QR Code Generator written in html using Google API
- <title>JRs QR Corner</title>
- </head>
-  
-  <body>
+## <img width="346" alt="Untitled 3" src="https://user-images.githubusercontent.com/119916323/231365441-91e0e45f-ab9b-4693-acae-7bab2d324353.png">
+
+
+    <body>
       <div class="container-fluid">
           <div class="text-center">
               
