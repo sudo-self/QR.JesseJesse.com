@@ -2,6 +2,15 @@
 # <img width="1207" alt="Screenshot 2023-07-07 at 10 03 44 PM" src="https://github.com/sudo-self/QR.JesseJesse.com/assets/119916323/50a62d31-9c55-457b-89cb-e9691128ae2b">
 
 ### <!DOCTYPE html>
+
+</form>
+
+<div id="qrcode"></div>
+<script type="text/javascript">
+  function updateQRCode(text) {
+
+    var element = document.getElementById("qrcode");
+
 <html>
 <head>
 <style>
@@ -28,13 +37,7 @@
 <body>
 <form name="QRform" id="QRform">
 <textarea name="textField" rows="6" cols="50" onkeyup="updateQRCode(this.value)" onclick="this.focus();this.select();">A QR generator that updates in real time as you type.</textarea>
-</form>
 
-<div id="qrcode"></div>
-<script type="text/javascript">
-  function updateQRCode(text) {
-
-    var element = document.getElementById("qrcode");
 
     var bodyElement = document.body;
     if(element.lastChild)
