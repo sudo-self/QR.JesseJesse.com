@@ -1,72 +1,519 @@
 <!DOCTYPE html>
-<html>
-  <head>
-      
-      <style>
-          body {
-              background-color: rgb(172,172,172);
-          }
-      </style> 
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Custom QR Creator</title>
+  <meta name="description" content="Create customizable QR codes for websites and wifi" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://qr.jessejesse.com" />
+  <meta property="og:title" content="Custom QR Creator" />
+  <meta property="og:description" content="Create customizable QR codes for websites and wifi" />
+  <meta property="og:image" content="https://qr.jessejesse.com/og.png" />
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://qr.jessejesse.com" />
+  <meta property="twitter:title" content="Custom QR Creator" />
+  <meta property="twitter:description" content="Create customizable QR codes for websites and wifi" />
+  <meta property="twitter:image" content="https://qr.jessejesse.com/og.png" />
+  <meta name="author" content="JesseJesse.com" />
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --gray-light: #e2e8f0;
+      --border-radius: 12px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s ease;
+    }
+
+    .dark-mode {
+      --light: #0f172a;
+      --dark: #f1f5f9;
+      --gray: #94a3b8;
+      --gray-light: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: var(--dark);
+      min-height: 100vh;
+      padding: 20px;
+      transition: var(--transition);
+    }
+
+    body.dark-mode {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--gray);
+      font-weight: 400;
+    }
+
+    .app-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .dark-mode .app-container {
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .form-section {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .preview-section {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .dark-mode label {
+      color: var(--dark);
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--gray-light);
+      border-radius: 8px;
+      background: white;
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+      transition: var(--transition);
+    }
+
+    .dark-mode input,
+    .dark-mode select {
+      background: var(--gray-light);
+      border-color: #334155;
+      color: var(--dark);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    }
+
+    .color-inputs {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .color-input {
+      flex: 1;
+    }
+
+    input[type="color"] {
+      height: 45px;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--gray-light);
+      color: var(--dark);
+    }
+
+    .dark-mode .btn-secondary {
+      background: #334155;
+      color: var(--dark);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    #qrCodePreview {
+      width: 250px;
+      height: 250px;
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      image-rendering: pixelated; /* sharper on high-DPI screens */
+    }
+
+    .download-options {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .download-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--light);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      z-index: 100;
+    }
+
+    .dark-mode .theme-toggle {
+      background: var(--dark);
+      color: var(--light);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
-<svg xmlns="http://www.w3.org/2000/svg" width="731.662548828125px" height="121.383740234375px" viewBox="-115.83127441406248 14.308129882812501 731.662548828125 121.383740234375" style="background: none;" preserveAspectRatio="xMidYMid"><defs><linearGradient id="editing-sticker-gradient" x1="0.5" y1="0.2" x2="0.5" y2="0.8"><stop offset="0" stop-color="#01080b"/><stop offset="1" stop-color="#141617"/></linearGradient><filter id="editing-sticker" x="-100%" y="-100%" width="300%" height="300%"><feMorphology operator="erode" radius="1" in="SourceAlpha" result="alpha-erode"/><feConvolveMatrix order="3,3" divisor="1" kernelMatrix="0 1 0 1 1 1 0 1 0" in="alpha-erode" result="alpha-round"/><feMorphology operator="dilate" radius="3.5" in="alpha-round" result="dilate-shadow"/><feGaussianBlur in="dilate-shadow" stdDeviation="1.5" result="shadow"/><feFlood flood-color="#fff" result="flood-sticker"/><feComposite operator="in" in="flood-sticker" in2="alpha-round" result="comp-sticker"/><feMorphology operator="dilate" radius="3" in="comp-sticker" result="morph-sticker"/><feConvolveMatrix order="3,3" divisor="1" kernelMatrix="0 1 0 1 1 1 0 1 0" in="morph-sticker" result="sticker"/><feMerge><feMergeNode in="shadow"/><feMergeNode in="sticker"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#editing-sticker)"><g transform="translate(-10.960001230239868, 102.8778133392334)"><path d="M7.23 0.83L8.64-3.84L8.64-3.84Q10.88-2.62 14.21-2.62L14.21-2.62L14.21-2.62Q17.54-2.62 20.32-4.64L20.32-4.64L20.32-4.64Q23.10-6.66 25.09-10.37L25.09-10.37L25.09-10.37Q29.18-18.24 29.18-30.91L29.18-30.91L29.18-30.91Q29.18-38.98 25.54-38.98L25.54-38.98L25.54-38.98Q23.62-38.98 21.76-36.86L21.76-36.86L21.76-36.86Q19.90-34.75 18.43-31.36L18.43-31.36L18.43-31.36Q15.23-23.62 15.23-14.53L15.23-14.53L15.23-14.53Q15.23-12.67 16.13-11.55L16.13-11.55L16.13-11.55Q17.02-10.43 18.62-10.43L18.62-10.43L18.62-10.43Q18.37-8.45 16.64-7.04L16.64-7.04L16.64-7.04Q14.91-5.63 12.74-5.63L12.74-5.63L12.74-5.63Q7.55-5.63 4.90-8.86L4.90-8.86L4.90-8.86Q2.24-12.10 2.24-17.95L2.24-17.95L2.24-17.95Q2.24-23.81 4.03-28.42L4.03-28.42L4.03-28.42Q5.82-33.02 8.96-36.38L8.96-36.38L8.96-36.38Q12.10-39.74 16.42-41.66L16.42-41.66L16.42-41.66Q20.74-43.58 25.86-43.58L25.86-43.58L25.86-43.58Q43.01-43.58 43.01-26.88L43.01-26.88L43.01-26.88Q43.01-14.85 37.25-7.49L37.25-7.49L37.25-7.49Q31.49-0.06 21.50 0.83L21.50 0.83L21.50 0.83Q27.39 2.11 33.34 2.11L33.34 2.11L33.34 2.11Q38.02 2.11 41.47 0.13L41.47 0.13L41.47 0.13Q42.43-0.45 42.82-1.09L42.82-1.09L42.82-1.09Q44.74 0.64 44.74 4.06L44.74 4.06L44.74 4.06Q44.74 7.49 41.70 9.47L41.70 9.47L41.70 9.47Q38.66 11.46 32.74 11.46L32.74 11.46L32.74 11.46Q26.82 11.46 19.97 8.70L19.97 8.70L19.97 8.70Q13.12 5.95 7.23 0.83L7.23 0.83ZM59.20 0L45.50 0L53.31-42.05L53.31-42.05Q59.65-42.75 68.90-42.75L68.90-42.75L68.90-42.75Q78.14-42.75 82.43-40.06L82.43-40.06L82.43-40.06Q86.72-37.38 86.72-31.97L86.72-31.97L86.72-31.97Q86.72-26.56 83.94-23.17L83.94-23.17L83.94-23.17Q81.15-19.78 76.35-18.69L76.35-18.69L76.35-18.69Q77.44-13.38 79.94-9.09L79.94-9.09L79.94-9.09Q82.24-5.06 84.93-3.78L84.93-3.78L84.93-3.78Q83.97-1.09 82.02 0.10L82.02 0.10L82.02 0.10Q80.06 1.28 77.28 1.28L77.28 1.28L77.28 1.28Q74.50 1.28 72.32-0.35L72.32-0.35L72.32-0.35Q70.14-1.98 68.42-4.99L68.42-4.99L68.42-4.99Q64.77-11.52 64.38-21.82L64.38-21.82L64.83-21.82L64.83-21.82Q69.57-21.95 71.94-24.42L71.94-24.42L71.94-24.42Q74.30-26.88 74.30-32.06L74.30-32.06L74.30-32.06Q74.30-38.53 68.86-38.78L68.86-38.78L67.46-38.78L67.46-38.78Q66.88-38.78 66.56-38.72L66.56-38.72L59.20 0ZM87.74-3.78L87.74-3.78L87.74-3.78Q87.74-6.21 89.63-7.55L89.63-7.55L89.63-7.55Q91.52-8.90 94.21-8.90L94.21-8.90L94.21-8.90Q96.90-8.90 98.53-7.55L98.53-7.55L98.53-7.55Q100.16-6.21 100.16-3.78L100.16-3.78L100.16-3.78Q100.16-1.34 98.34-0.03L98.34-0.03L98.34-0.03Q96.51 1.28 93.82 1.28L93.82 1.28L93.82 1.28Q91.14 1.28 89.44-0.03L89.44-0.03L89.44-0.03Q87.74-1.34 87.74-3.78ZM98.05 8.83L98.05 8.83L98.05 8.83Q101.31 8.45 103.36 4.22L103.36 4.22L103.36 4.22Q105.47-0.06 107.39-9.92L107.39-9.92L113.60-42.24L127.49-42.24L121.28-9.92L121.28-9.92Q118.91 2.62 115.01 7.55L115.01 7.55L115.01 7.55Q112.96 10.11 110.37 11.14L110.37 11.14L110.37 11.14Q107.78 12.16 104.96 12.16L104.96 12.16L104.96 12.16Q102.14 12.16 100.32 11.14L100.32 11.14L100.32 11.14Q98.50 10.11 98.05 8.83ZM154.82-10.82L154.82-10.82L154.82-10.82Q156.42-9.73 156.42-7.33L156.42-7.33L156.42-7.33Q156.42-4.93 155.20-3.39L155.20-3.39L155.20-3.39Q153.98-1.86 152-0.83L152-0.83L152-0.83Q147.90 1.28 143.49 1.28L143.49 1.28L143.49 1.28Q139.07 1.28 136.48 0.32L136.48 0.32L136.48 0.32Q133.89-0.64 132.16-2.43L132.16-2.43L132.16-2.43Q128.77-5.82 128.77-12.03L128.77-12.03L128.77-12.03Q128.77-21.70 134.02-27.58L134.02-27.58L134.02-27.58Q139.65-33.92 149.44-33.92L149.44-33.92L149.44-33.92Q155.52-33.92 158.53-31.36L158.53-31.36L158.53-31.36Q160.77-29.44 160.77-26.30L160.77-26.30L160.77-26.30Q160.77-15.04 141.31-15.04L141.31-15.04L141.31-15.04Q141.06-13.38 141.06-11.97L141.06-11.97L141.06-11.97Q141.06-9.02 142.37-7.90L142.37-7.90L142.37-7.90Q143.68-6.78 146.11-6.78L146.11-6.78L146.11-6.78Q148.54-6.78 151.14-7.90L151.14-7.90L151.14-7.90Q153.73-9.02 154.82-10.82ZM141.76-17.79L141.76-17.79L141.76-17.79Q146.30-17.79 148.93-20.61L148.93-20.61L148.93-20.61Q151.55-23.30 151.55-27.58L151.55-27.58L151.55-27.58Q151.55-29.06 151.01-29.86L151.01-29.86L151.01-29.86Q150.46-30.66 149.38-30.66L149.38-30.66L149.38-30.66Q148.29-30.66 147.36-30.24L147.36-30.24L147.36-30.24Q146.43-29.82 145.47-28.42L145.47-28.42L145.47-28.42Q143.10-25.22 141.76-17.79ZM182.08-22.46L182.08-22.46L182.08-22.46Q182.98-24.83 182.98-26.88L182.98-26.88L182.98-26.88Q182.98-30.66 179.90-30.66L179.90-30.66L179.90-30.66Q178.30-30.66 176.99-29.22L176.99-29.22L176.99-29.22Q175.68-27.78 175.68-25.98L175.68-25.98L175.68-25.98Q175.68-24.70 176.70-23.68L176.70-23.68L176.70-23.68Q178.18-22.27 181.95-19.97L181.95-19.97L181.95-19.97Q185.73-17.66 187.17-15.78L187.17-15.78L187.17-15.78Q188.61-13.89 188.61-11.30L188.61-11.30L188.61-11.30Q188.61-8.70 187.36-6.34L187.36-6.34L187.36-6.34Q186.11-3.97 183.87-2.30L183.87-2.30L183.87-2.30Q179.07 1.28 171.39 1.28L171.39 1.28L171.39 1.28Q167.23 1.28 164.03-0.90L164.03-0.90L164.03-0.90Q160.83-3.01 160.83-5.50L160.83-5.50L160.83-5.50Q160.83-8 162.66-9.47L162.66-9.47L162.66-9.47Q164.48-10.94 167.17-10.94L167.17-10.94L167.17-10.94Q169.86-10.94 171.52-9.92L171.52-9.92L171.52-9.92Q170.69-7.81 170.69-6.40L170.69-6.40L170.69-6.40Q170.69-2.18 174.27-2.18L174.27-2.18L174.27-2.18Q175.81-2.18 176.83-3.14L176.83-3.14L176.83-3.14Q177.86-4.10 177.86-5.76L177.86-5.76L177.86-5.76Q177.86-9.02 172.35-12.48L172.35-12.48L172.35-12.48Q167.87-15.42 166.85-16.58L166.85-16.58L166.85-16.58Q165.12-18.62 165.12-21.18L165.12-21.18L165.12-21.18Q165.12-23.74 166.34-26.18L166.34-26.18L166.34-26.18Q167.55-28.61 169.79-30.34L169.79-30.34L169.79-30.34Q174.46-33.92 182.59-33.92L182.59-33.92L182.59-33.92Q186.75-33.92 189.22-32.26L189.22-32.26L189.22-32.26Q191.68-30.59 191.68-27.78L191.68-27.78L191.68-27.78Q191.68-24.96 189.98-23.36L189.98-23.36L189.98-23.36Q188.29-21.76 185.22-21.76L185.22-21.76L185.22-21.76Q183.10-21.76 182.08-22.46ZM213.18-22.46L213.18-22.46L213.18-22.46Q214.08-24.83 214.08-26.88L214.08-26.88L214.08-26.88Q214.08-30.66 211.01-30.66L211.01-30.66L211.01-30.66Q209.41-30.66 208.10-29.22L208.10-29.22L208.10-29.22Q206.78-27.78 206.78-25.98L206.78-25.98L206.78-25.98Q206.78-24.70 207.81-23.68L207.81-23.68L207.81-23.68Q209.28-22.27 213.06-19.97L213.06-19.97L213.06-19.97Q216.83-17.66 218.27-15.78L218.27-15.78L218.27-15.78Q219.71-13.89 219.71-11.30L219.71-11.30L219.71-11.30Q219.71-8.70 218.46-6.34L218.46-6.34L218.46-6.34Q217.22-3.97 214.98-2.30L214.98-2.30L214.98-2.30Q210.18 1.28 202.50 1.28L202.50 1.28L202.50 1.28Q198.34 1.28 195.14-0.90L195.14-0.90L195.14-0.90Q191.94-3.01 191.94-5.50L191.94-5.50L191.94-5.50Q191.94-8 193.76-9.47L193.76-9.47L193.76-9.47Q195.58-10.94 198.27-10.94L198.27-10.94L198.27-10.94Q200.96-10.94 202.62-9.92L202.62-9.92L202.62-9.92Q201.79-7.81 201.79-6.40L201.79-6.40L201.79-6.40Q201.79-2.18 205.38-2.18L205.38-2.18L205.38-2.18Q206.91-2.18 207.94-3.14L207.94-3.14L207.94-3.14Q208.96-4.10 208.96-5.76L208.96-5.76L208.96-5.76Q208.96-9.02 203.46-12.48L203.46-12.48L203.46-12.48Q198.98-15.42 197.95-16.58L197.95-16.58L197.95-16.58Q196.22-18.62 196.22-21.18L196.22-21.18L196.22-21.18Q196.22-23.74 197.44-26.18L197.44-26.18L197.44-26.18Q198.66-28.61 200.90-30.34L200.90-30.34L200.90-30.34Q205.57-33.92 213.70-33.92L213.70-33.92L213.70-33.92Q217.86-33.92 220.32-32.26L220.32-32.26L220.32-32.26Q222.78-30.59 222.78-27.78L222.78-27.78L222.78-27.78Q222.78-24.96 221.09-23.36L221.09-23.36L221.09-23.36Q219.39-21.76 216.32-21.76L216.32-21.76L216.32-21.76Q214.21-21.76 213.18-22.46ZM217.09 8.83L217.09 8.83L217.09 8.83Q220.35 8.45 222.40 4.22L222.40 4.22L222.40 4.22Q224.51-0.06 226.43-9.92L226.43-9.92L232.64-42.24L246.53-42.24L240.32-9.92L240.32-9.92Q237.95 2.62 234.05 7.55L234.05 7.55L234.05 7.55Q232.00 10.11 229.41 11.14L229.41 11.14L229.41 11.14Q226.82 12.16 224.00 12.16L224.00 12.16L224.00 12.16Q221.18 12.16 219.36 11.14L219.36 11.14L219.36 11.14Q217.54 10.11 217.09 8.83ZM273.86-10.82L273.86-10.82L273.86-10.82Q275.46-9.73 275.46-7.33L275.46-7.33L275.46-7.33Q275.46-4.93 274.24-3.39L274.24-3.39L274.24-3.39Q273.02-1.86 271.04-0.83L271.04-0.83L271.04-0.83Q266.94 1.28 262.53 1.28L262.53 1.28L262.53 1.28Q258.11 1.28 255.52 0.32L255.52 0.32L255.52 0.32Q252.93-0.64 251.20-2.43L251.20-2.43L251.20-2.43Q247.81-5.82 247.81-12.03L247.81-12.03L247.81-12.03Q247.81-21.70 253.06-27.58L253.06-27.58L253.06-27.58Q258.69-33.92 268.48-33.92L268.48-33.92L268.48-33.92Q274.56-33.92 277.57-31.36L277.57-31.36L277.57-31.36Q279.81-29.44 279.81-26.30L279.81-26.30L279.81-26.30Q279.81-15.04 260.35-15.04L260.35-15.04L260.35-15.04Q260.10-13.38 260.10-11.97L260.10-11.97L260.10-11.97Q260.10-9.02 261.41-7.90L261.41-7.90L261.41-7.90Q262.72-6.78 265.15-6.78L265.15-6.78L265.15-6.78Q267.58-6.78 270.18-7.90L270.18-7.90L270.18-7.90Q272.77-9.02 273.86-10.82ZM260.80-17.79L260.80-17.79L260.80-17.79Q265.34-17.79 267.97-20.61L267.97-20.61L267.97-20.61Q270.59-23.30 270.59-27.58L270.59-27.58L270.59-27.58Q270.59-29.06 270.05-29.86L270.05-29.86L270.05-29.86Q269.50-30.66 268.42-30.66L268.42-30.66L268.42-30.66Q267.33-30.66 266.40-30.24L266.40-30.24L266.40-30.24Q265.47-29.82 264.51-28.42L264.51-28.42L264.51-28.42Q262.14-25.22 260.80-17.79ZM301.12-22.46L301.12-22.46L301.12-22.46Q302.02-24.83 302.02-26.88L302.02-26.88L302.02-26.88Q302.02-30.66 298.94-30.66L298.94-30.66L298.94-30.66Q297.34-30.66 296.03-29.22L296.03-29.22L296.03-29.22Q294.72-27.78 294.72-25.98L294.72-25.98L294.72-25.98Q294.72-24.70 295.74-23.68L295.74-23.68L295.74-23.68Q297.22-22.27 300.99-19.97L300.99-19.97L300.99-19.97Q304.77-17.66 306.21-15.78L306.21-15.78L306.21-15.78Q307.65-13.89 307.65-11.30L307.65-11.30L307.65-11.30Q307.65-8.70 306.40-6.34L306.40-6.34L306.40-6.34Q305.15-3.97 302.91-2.30L302.91-2.30L302.91-2.30Q298.11 1.28 290.43 1.28L290.43 1.28L290.43 1.28Q286.27 1.28 283.07-0.90L283.07-0.90L283.07-0.90Q279.87-3.01 279.87-5.50L279.87-5.50L279.87-5.50Q279.87-8 281.70-9.47L281.70-9.47L281.70-9.47Q283.52-10.94 286.21-10.94L286.21-10.94L286.21-10.94Q288.90-10.94 290.56-9.92L290.56-9.92L290.56-9.92Q289.73-7.81 289.73-6.40L289.73-6.40L289.73-6.40Q289.73-2.18 293.31-2.18L293.31-2.18L293.31-2.18Q294.85-2.18 295.87-3.14L295.87-3.14L295.87-3.14Q296.90-4.10 296.90-5.76L296.90-5.76L296.90-5.76Q296.90-9.02 291.39-12.48L291.39-12.48L291.39-12.48Q286.91-15.42 285.89-16.58L285.89-16.58L285.89-16.58Q284.16-18.62 284.16-21.18L284.16-21.18L284.16-21.18Q284.16-23.74 285.38-26.18L285.38-26.18L285.38-26.18Q286.59-28.61 288.83-30.34L288.83-30.34L288.83-30.34Q293.50-33.92 301.63-33.92L301.63-33.92L301.63-33.92Q305.79-33.92 308.26-32.26L308.26-32.26L308.26-32.26Q310.72-30.59 310.72-27.78L310.72-27.78L310.72-27.78Q310.72-24.96 309.02-23.36L309.02-23.36L309.02-23.36Q307.33-21.76 304.26-21.76L304.26-21.76L304.26-21.76Q302.14-21.76 301.12-22.46ZM332.22-22.46L332.22-22.46L332.22-22.46Q333.12-24.83 333.12-26.88L333.12-26.88L333.12-26.88Q333.12-30.66 330.05-30.66L330.05-30.66L330.05-30.66Q328.45-30.66 327.14-29.22L327.14-29.22L327.14-29.22Q325.82-27.78 325.82-25.98L325.82-25.98L325.82-25.98Q325.82-24.70 326.85-23.68L326.85-23.68L326.85-23.68Q328.32-22.27 332.10-19.97L332.10-19.97L332.10-19.97Q335.87-17.66 337.31-15.78L337.31-15.78L337.31-15.78Q338.75-13.89 338.75-11.30L338.75-11.30L338.75-11.30Q338.75-8.70 337.50-6.34L337.50-6.34L337.50-6.34Q336.26-3.97 334.02-2.30L334.02-2.30L334.02-2.30Q329.22 1.28 321.54 1.28L321.54 1.28L321.54 1.28Q317.38 1.28 314.18-0.90L314.18-0.90L314.18-0.90Q310.98-3.01 310.98-5.50L310.98-5.50L310.98-5.50Q310.98-8 312.80-9.47L312.80-9.47L312.80-9.47Q314.62-10.94 317.31-10.94L317.31-10.94L317.31-10.94Q320.00-10.94 321.66-9.92L321.66-9.92L321.66-9.92Q320.83-7.81 320.83-6.40L320.83-6.40L320.83-6.40Q320.83-2.18 324.42-2.18L324.42-2.18L324.42-2.18Q325.95-2.18 326.98-3.14L326.98-3.14L326.98-3.14Q328.00-4.10 328.00-5.76L328.00-5.76L328.00-5.76Q328.00-9.02 322.50-12.48L322.50-12.48L322.50-12.48Q318.02-15.42 316.99-16.58L316.99-16.58L316.99-16.58Q315.26-18.62 315.26-21.18L315.26-21.18L315.26-21.18Q315.26-23.74 316.48-26.18L316.48-26.18L316.48-26.18Q317.70-28.61 319.94-30.34L319.94-30.34L319.94-30.34Q324.61-33.92 332.74-33.92L332.74-33.92L332.74-33.92Q336.90-33.92 339.36-32.26L339.36-32.26L339.36-32.26Q341.82-30.59 341.82-27.78L341.82-27.78L341.82-27.78Q341.82-24.96 340.13-23.36L340.13-23.36L340.13-23.36Q338.43-21.76 335.36-21.76L335.36-21.76L335.36-21.76Q333.25-21.76 332.22-22.46ZM370.11-10.82L370.11-10.82L370.11-10.82Q371.71-9.73 371.71-7.33L371.71-7.33L371.71-7.33Q371.71-4.93 370.50-3.39L370.50-3.39L370.50-3.39Q369.28-1.86 367.30-0.83L367.30-0.83L367.30-0.83Q363.20 1.28 358.78 1.28L358.78 1.28L358.78 1.28Q354.37 1.28 351.78 0.32L351.78 0.32L351.78 0.32Q349.18-0.64 347.46-2.43L347.46-2.43L347.46-2.43Q344.06-5.82 344.06-12.03L344.06-12.03L344.06-12.03Q344.06-21.70 349.31-27.58L349.31-27.58L349.31-27.58Q354.94-33.92 364.74-33.92L364.74-33.92L364.74-33.92Q370.82-33.92 373.82-31.36L373.82-31.36L373.82-31.36Q376.06-29.44 376.06-26.30L376.06-26.30L376.06-26.30Q376.06-15.04 356.61-15.04L356.61-15.04L356.61-15.04Q356.35-13.38 356.35-11.97L356.35-11.97L356.35-11.97Q356.35-9.02 357.66-7.90L357.66-7.90L357.66-7.90Q358.98-6.78 361.41-6.78L361.41-6.78L361.41-6.78Q363.84-6.78 366.43-7.90L366.43-7.90L366.43-7.90Q369.02-9.02 370.11-10.82ZM357.06-17.79L357.06-17.79L357.06-17.79Q361.60-17.79 364.22-20.61L364.22-20.61L364.22-20.61Q366.85-23.30 366.85-27.58L366.85-27.58L366.85-27.58Q366.85-29.06 366.30-29.86L366.30-29.86L366.30-29.86Q365.76-30.66 364.67-30.66L364.67-30.66L364.67-30.66Q363.58-30.66 362.66-30.24L362.66-30.24L362.66-30.24Q361.73-29.82 360.77-28.42L360.77-28.42L360.77-28.42Q358.40-25.22 357.06-17.79ZM376.32-3.78L376.32-3.78L376.32-3.78Q376.32-6.21 378.21-7.55L378.21-7.55L378.21-7.55Q380.10-8.90 382.78-8.90L382.78-8.90L382.78-8.90Q385.47-8.90 387.10-7.55L387.10-7.55L387.10-7.55Q388.74-6.21 388.74-3.78L388.74-3.78L388.74-3.78Q388.74-1.34 386.91-0.03L386.91-0.03L386.91-0.03Q385.09 1.28 382.40 1.28L382.40 1.28L382.40 1.28Q379.71 1.28 378.02-0.03L378.02-0.03L378.02-0.03Q376.32-1.34 376.32-3.78ZM426.11-26.62L426.11-26.62L426.11-26.62Q426.11-23.94 423.87-22.27L423.87-22.27L423.87-22.27Q421.63-20.61 417.98-20.61L417.98-20.61L417.98-20.61Q416.45-20.61 415.55-21.06L415.55-21.06L415.55-21.06Q416.26-22.72 416.48-24.80L416.48-24.80L416.48-24.80Q416.70-26.88 416.70-27.46L416.70-27.46L416.70-27.46Q416.70-30.14 414.85-30.14L414.85-30.14L414.85-30.14Q413.57-30.14 412.13-28.54L412.13-28.54L412.13-28.54Q410.69-26.94 409.47-24.45L409.47-24.45L409.47-24.45Q406.78-18.69 406.78-12.86L406.78-12.86L406.78-12.86Q406.78-9.66 408.00-8.22L408.00-8.22L408.00-8.22Q409.22-6.78 411.90-6.78L411.90-6.78L411.90-6.78Q415.62-6.78 418.56-9.86L418.56-9.86L418.56-9.86Q419.39-10.82 419.84-11.90L419.84-11.90L419.84-11.90Q422.27-10.62 422.27-7.10L422.27-7.10L422.27-7.10Q422.27-3.52 418.30-1.15L418.30-1.15L418.30-1.15Q414.21 1.28 407.68 1.28L407.68 1.28L407.68 1.28Q394.69 1.28 394.69-12.48L394.69-12.48L394.69-12.48Q394.69-22.53 400.38-28.29L400.38-28.29L400.38-28.29Q405.89-33.92 416.00-33.92L416.00-33.92L416.00-33.92Q426.11-33.92 426.11-26.62ZM441.79 1.28L441.79 1.28L441.79 1.28Q427.71 1.28 427.71-11.97L427.71-11.97L427.71-11.97Q427.71-21.38 432.90-27.46L432.90-27.46L432.90-27.46Q438.40-33.92 447.94-33.92L447.94-33.92L447.94-33.92Q454.85-33.92 458.37-30.72L458.37-30.72L458.37-30.72Q461.89-27.52 461.89-20.80L461.89-20.80L461.89-20.80Q461.89-10.56 456.38-4.61L456.38-4.61L456.38-4.61Q451.01 1.28 441.79 1.28ZM443.46-26.56L443.46-26.56L443.46-26.56Q442.69-24.83 442.08-22.24L442.08-22.24L442.08-22.24Q441.47-19.65 440.70-15.55L440.70-15.55L440.70-15.55Q439.94-11.46 439.94-6.40L439.94-6.40L439.94-6.40Q439.94-4.74 440.48-3.65L440.48-3.65L440.48-3.65Q441.02-2.56 442.50-2.56L442.50-2.56L442.50-2.56Q443.97-2.56 444.90-3.26L444.90-3.26L444.90-3.26Q445.82-3.97 446.53-5.63L446.53-5.63L446.53-5.63Q447.81-8.58 448.83-14.05L448.83-14.05L448.83-14.05Q449.86-19.52 449.95-21.89L449.95-21.89L449.95-21.89Q450.05-24.26 450.05-26.02L450.05-26.02L450.05-26.02Q450.05-27.78 449.54-28.93L449.54-28.93L449.54-28.93Q449.02-30.08 447.58-30.08L447.58-30.08L447.58-30.08Q446.14-30.08 445.18-29.18L445.18-29.18L445.18-29.18Q444.22-28.29 443.46-26.56ZM511.74 1.28L511.74 1.28L511.74 1.28Q504.00 1.28 504.00-4.74L504.00-4.74L504.00-4.74Q504.00-7.36 505.12-12.45L505.12-12.45L505.12-12.45Q506.24-17.54 506.62-19.58L506.62-19.58L506.62-19.58Q507.52-24.26 507.52-25.73L507.52-25.73L507.52-25.73Q507.52-28.99 505.09-28.99L505.09-28.99L505.09-28.99Q503.49-28.99 501.95-26.78L501.95-26.78L501.95-26.78Q500.42-24.58 499.71-20.16L499.71-20.16L495.74 0L483.26 1.28L486.72-16.13L486.72-16.13Q487.30-19.01 487.81-22.27L487.81-22.27L487.81-22.27Q488.32-25.54 488.32-26.05L488.32-26.05L488.32-26.05Q488.32-28.99 486.14-28.99L486.14-28.99L486.14-28.99Q484.67-28.99 483.07-26.82L483.07-26.82L483.07-26.82Q481.47-24.64 480.58-20.16L480.58-20.16L476.67 0L464.06 1.28L470.78-32.64L481.22-33.92L480.13-27.46L480.13-27.46Q481.79-30.91 484.86-32.42L484.86-32.42L484.86-32.42Q487.94-33.92 492.74-33.92L492.74-33.92L492.74-33.92Q495.49-33.92 497.28-32.58L497.28-32.58L497.28-32.58Q499.07-31.23 499.65-29.06L499.65-29.06L499.65-29.06Q500.74-31.30 503.52-32.61L503.52-32.61L503.52-32.61Q506.30-33.92 509.73-33.92L509.73-33.92L509.73-33.92Q513.15-33.92 514.85-33.18L514.85-33.18L514.85-33.18Q516.54-32.45 517.57-31.23L517.57-31.23L517.57-31.23Q519.30-28.99 519.30-24.90L519.30-24.90L519.30-24.90Q519.30-20.86 517.57-12.48L517.57-12.48L517.57-12.48Q516.67-8.38 516.67-6.88L516.67-6.88L516.67-6.88Q516.67-5.38 517.54-4.48L517.54-4.48L517.54-4.48Q518.40-3.58 519.68-3.46L519.68-3.46L519.68-3.46Q519.04-1.28 516.83 0L516.83 0L516.83 0Q514.62 1.28 511.74 1.28Z" fill="url(#editing-sticker-gradient)" stroke="#021721" stroke-width="2.5"/></g></g><style>text {
-  font-size: 64px;
-  font-family: Arial Black;
-  dominant-baseline: central;
-  text-anchor: middle;
-}</style></svg>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<script type="text/javascript" src="qrcode.js">
-</script>
-<script type="text/javascript" src="html5-qrcode.js">
-</script>
-<style type="text/css" media="screen">
-  body { text-align:center; }
-</style>
-</head>
+
 <body>
-<form name="QRform" id="QRform">
-  <textarea name="textField" rows="6" cols="50" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();">A QR generator that updates in real time as you type.</textarea>
-</form>
+  <div class="container">
+    <header>
+      <h1>QR Creator</h1>
+      <p class="subtitle">Create customizable QR codes for websites and wifi</p>
+    </header>
 
-<!-- This is where our QRCode will appear in. -->
-<div id="qrcode"></div>
+    <div class="app-container">
+      <section class="form-section">
+        <div class="form-group">
+          <label for="mode">QR Type</label>
+          <select id="mode">
+            <option value="wifi">WiFi</option>
+            <option value="url" selected>URL</option>
+          </select>
+        </div>
 
-<script type="text/javascript">
-  function updateQRCode(text) {
+        <div id="wifiFields" class="hidden">
+          <div class="form-group">
+            <label for="ssid">Wi-Fi SSID</label>
+            <input type="text" id="ssid" placeholder="Network Name">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="text" id="password" placeholder="Wi-Fi Password">
+          </div>
+          <div class="form-group">
+            <label for="encryption">Encryption</label>
+            <select id="encryption">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">None</option>
+            </select>
+          </div>
+        </div>
 
-    var element = document.getElementById("qrcode");
+        <div id="urlField">
+          <div class="form-group">
+            <label for="urlInput">Target URL</label>
+            <input type="url" id="urlInput" placeholder="https://qr.jessejesse.com">
+          </div>
+        </div>
 
-    var bodyElement = document.body;
-    if(element.lastChild)
-      element.replaceChild(showQRCode(text), element.lastChild);
-    else
-      element.appendChild(showQRCode(text));
+        <div class="form-group">
+          <label for="styleSelect">QR Style</label>
+          <select id="styleSelect">
+            <option value="square">Squares</option>
+            <option value="dots">Dots</option>
+            <option value="rounded">Rounded</option>
+            <option value="classy">Classy</option>
+            <option value="classy-rounded">Classy Rounded</option>
+            <option value="extra-rounded">Extra Rounded</option>
+            <option value="triangle">Triangles</option>
+          </select>
+        </div>
 
-  }
+        <div class="form-group">
+          <div class="color-inputs">
+            <div class="color-input">
+              <label for="fill">Primary Color</label>
+              <input type="color" id="fill" value="#000000">
+            </div>
+            <div class="color-input">
+              <label for="bg">Background Color</label>
+              <input type="color" id="bg" value="#ffffff">
+            </div>
+          </div>
+        </div>
 
-  updateQRCode('qr.jessejesse.com');
-</script>
+        <div class="form-group">
+          <label for="imageInput">Image URL (Optional)</label>
+          <input type="url" id="imageInput" placeholder="https://qr.jessejesse.com/logo.png">
+        </div>
+
+        <div class="buttons">
+          <button id="clearButton" class="btn-danger">Reset</button>
+          <button id="generateButton" class="btn-primary">Generate QR Code</button>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <div id="qrCodePreview"></div>
+        <div class="download-options">
+          <button id="downloadPng" class="download-btn btn-primary">
+            PNG
+          </button>
+          <button id="downloadSvg" class="download-btn btn-secondary">
+            SVG
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <button id="themeToggle" class="theme-toggle">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+
+  <footer style="text-align:center; margin-top:2rem; font-size:0.9rem; color:var(--gray);">
+    <a href="https://qr.jessejesse.com" target="_blank"
+      style="color:var(--primary); text-decoration:none; transition: color 0.3s;">qr.jessejesse.com</a>
+  </footer>
+
+  <script>
+    const modeSelect = document.getElementById("mode");
+    const styleSelect = document.getElementById("styleSelect");
+    const ssidInput = document.getElementById("ssid");
+    const passwordInput = document.getElementById("password");
+    const encryptionInput = document.getElementById("encryption");
+    const urlInput = document.getElementById("urlInput");
+    const fillColorInput = document.getElementById("fill");
+    const bgColorInput = document.getElementById("bg");
+    const imageInput = document.getElementById("imageInput");
+    const qrPreview = document.getElementById("qrCodePreview");
+    const clearButton = document.getElementById("clearButton");
+    const themeToggle = document.getElementById("themeToggle");
+    const downloadPng = document.getElementById("downloadPng");
+    const downloadSvg = document.getElementById("downloadSvg");
+    const generateButton = document.getElementById("generateButton");
+
+    let qrCode = new QRCodeStyling({
+      width: 250,
+      height: 250,
+      type: "svg",
+      data: "https://qr.jessejesse.com",
+      image: "",
+      dotsOptions: { color: "#000", type: "square" },
+      backgroundOptions: { color: "#fff" },
+      qrOptions: { errorCorrectionLevel: 'H' }
+    });
+
+    qrCode.append(qrPreview);
+
+    function getQRData() {
+      const mode = modeSelect.value;
+      if (mode === "wifi") {
+        const ssid = ssidInput.value.trim();
+        const pwd = passwordInput.value.trim();
+        const enc = encryptionInput.value;
+        return `WIFI:T:${enc};S:${ssid};P:${pwd};;`;
+      } else {
+        return urlInput.value.trim() || "https://qr.jessejesse.com";
+      }
+    }
+
+    function updateQRCode() {
+      const fill = fillColorInput.value;
+      const bg = bgColorInput.value;
+      const style = styleSelect.value;
+      const data = getQRData();
+      const image = imageInput.value.trim();
+
+      qrCode.update({
+        data,
+        image: image || "",
+        dotsOptions: { color: fill, type: style },
+        backgroundOptions: { color: bg },
+      });
+    }
+
+    function toggleFields() {
+      const mode = modeSelect.value;
+      document.getElementById("wifiFields").classList.toggle("hidden", mode !== "wifi");
+      document.getElementById("urlField").classList.toggle("hidden", mode !== "url");
+      updateQRCode();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    }
+
+    if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark-mode");
+
+    modeSelect.addEventListener("change", toggleFields);
+    styleSelect.addEventListener("change", updateQRCode);
+    ssidInput.addEventListener("input", updateQRCode);
+    passwordInput.addEventListener("input", updateQRCode);
+    encryptionInput.addEventListener("change", updateQRCode);
+    urlInput.addEventListener("input", updateQRCode);
+    fillColorInput.addEventListener("input", updateQRCode);
+    bgColorInput.addEventListener("input", updateQRCode);
+    imageInput.addEventListener("input", updateQRCode);
+    themeToggle.addEventListener("click", toggleTheme);
+    generateButton.addEventListener("click", updateQRCode);
+
+    clearButton.addEventListener("click", () => {
+      ssidInput.value = "";
+      passwordInput.value = "";
+      urlInput.value = "";
+      imageInput.value = "";
+      fillColorInput.value = "#000000";
+      bgColorInput.value = "#ffffff";
+      styleSelect.value = "square";
+      updateQRCode();
+    });
+
+    downloadPng.addEventListener("click", () => {
+      qrCode.download({ name: "StyledQRCode", extension: "png", scale: 4 });
+    });
+
+    downloadSvg.addEventListener("click", () => {
+      qrCode.download({ name: "StyledQRCode", extension: "svg" });
+    });
+
+    toggleFields();
+    updateQRCode();
+
+    const footerLink = document.querySelector('footer a');
+    footerLink.addEventListener('mouseenter', () => footerLink.style.color = getComputedStyle(document.documentElement).getPropertyValue('--secondary'));
+    footerLink.addEventListener('mouseleave', () => footerLink.style.color = getComputedStyle(document.documentElement).getPropertyValue('--primary'));
+  </script>
 </body>
+
 </html>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-<!-- This is where our QRCode will appear in. -->
-<div id="qrcode"></div>
-
-<script type="text/javascript">
-  function updateQRCode(text) {
-
-    var element = document.getElementById("qrcode");
-
-    var bodyElement = document.body;
-    if(element.lastChild)
-      element.replaceChild(showQRCode(text), element.lastChild);
-    else
-      element.appendChild(showQRCode(text));
-
-  }
-
-  updateQRCode('qr.jessejesse.com');
-</script>
-</body>
-</html>
